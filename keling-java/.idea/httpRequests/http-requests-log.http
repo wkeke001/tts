@@ -1,0 +1,110 @@
+POST http://localhost:8087/api/completion
+Content-Type: application/json
+Content-Length: 11
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+"你是谁"
+
+<> 2026-03-18T195808.200.json
+
+###
+
+POST http://localhost:8087/api/completion
+Content-Type: application/json
+Content-Length: 11
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+"你是谁"
+
+<> 2026-03-18T175621.200.json
+
+###
+
+POST http://localhost:8087/api/completion
+Content-Type: application/json
+Content-Length: 11
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+"你是谁"
+
+<> 2026-03-18T175544.200.json
+
+###
+
+POST http://localhost:8087/api/completion
+Content-Type: application/json
+Content-Length: 11
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+"你是谁"
+
+<> 2026-03-18T175229.200.json
+
+###
+
+POST http://localhost:8087/api/completion
+Content-Type: application/json
+Content-Length: 11
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+"你是谁"
+
+<> 2026-03-18T175135.200.json
+
+###
+
+GET http://localhost:8089/api/voice/create-from-url?url=https://web-tliaswk.oss-cn-shanghai.aliyuncs.com/yi2.wav
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-03-16T005101.200.json
+
+###
+
+GET http://localhost:8089/api/voice/create-from-url?url=https://web-tliaswk.oss-cn-shanghai.aliyuncs.com/yi2.wav
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-03-16T002920.200.json
+
+###
+
+GET http://localhost:8089/api/voice/create-from-url?url=https://web-tliaswk.oss-cn-shanghai.aliyuncs.com/yi2.wav
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-03-16T002857.200.json
+
+###
+
+GET http://localhost:8089/api/voice/create-from-url?url=https://web-tliaswk.oss-cn-shanghai.aliyuncs.com/yi2.wav
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-03-16T001913.200.json
+
+###
+
+GET http://localhost:8089/api/voice/create-from-url?url=https://web-tliaswk.oss-cn-shanghai.aliyuncs.com/yi2.wav
+User-Agent: IntelliJ HTTP Client/IntelliJ IDEA 2025.1.3
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+<> 2026-03-16T001406.200.json
+
+###
+
