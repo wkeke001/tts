@@ -1,4 +1,0 @@
-{
-  "message": "API returned error: 400 - {\"request_id\":\"26c2c6e2-d5c9-476f-ab06-9a47fc311f8a\",\"code\":\"InvalidParameter\",\"message\":\"Required body invalid, please check the request body format.\"}",
-  "status": "error"
-}
