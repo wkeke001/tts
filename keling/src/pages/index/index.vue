@@ -18,24 +18,6 @@
       <text class="app-subtitle">用一二布布的声音，说你想说的话</text>
     </view>
 
-    <!-- 服务状态提示 -->
-    <view v-if="noticeText" :class="['notice', noticeClass]">
-      <text class="notice-text">{{ noticeText }}</text>
-    </view>
-
-    <!-- 维护中遮罩 -->
-    <view v-if="isMaintenance" class="maintenance-overlay">
-      <view class="maintenance-card">
-        <text class="maintenance-icon">🔧</text>
-        <text class="maintenance-title">服务器维护中</text>
-        <text class="maintenance-msg">服务器正在维护中，请耐心等待恢复~</text>
-        <text class="maintenance-msg">服务恢复后此提示将自动消失</text>
-        <text class="maintenance-sub">加群交流 & 了解最新通知</text>
-        <image class="maintenance-qr" src="/static/group.jpg" mode="aspectFit" @longpress="saveQRCode"></image>
-        <text class="maintenance-hint">长按二维码保存，扫码加群</text>
-      </view>
-    </view>
-
     <view class="grid">
       <view class="card card-primary" @click="navigateTo('/pages/tts/index')">
         <image class="card-icon-img" src="/static/audio.gif" mode="aspectFit"></image>
@@ -107,24 +89,11 @@ export default {
       userInfo: {
         nickname: '',
         avatar: ''
-      },
-      noticeText: '',
-      noticeClass: 'notice-info',
-      isMaintenance: false,
-      checkCount: 0,
-      startTime: 0,
-      checkTimer: null
+      }
     }
   },
   onLoad() {
     this.checkLoginStatus()
-    this.checkServiceStatus()
-  },
-  onUnload() {
-    if (this.checkTimer) {
-      clearTimeout(this.checkTimer)
-      this.checkTimer = null
-    }
   },
   methods: {
     // 检查登录状态
@@ -152,59 +121,8 @@ export default {
         })
       }
     },
-    // 检查服务状态
-    async checkServiceStatus() {
-      try {
-        const res = await uni.request({
-          url: 'https://audio.box2ai.com/health',
-          method: 'GET',
-          timeout: 10000
-        })
-        
-        if (res.statusCode === 200 && res.data) {
-          if (res.data.maintenance) {
-            this.checkCount = 0
-            this.isMaintenance = true
-            this.noticeText = '服务器维护中，更多详情请加群了解哦~'
-            this.noticeClass = 'notice-warn'
-          } else {
-            this.checkCount++
-            this.isMaintenance = false
-            this.noticeText = ''
-          }
-        }
-      } catch (error) {
-        this.checkCount = 0
-        if (this.startTime === 0) {
-          this.startTime = Date.now()
-        }
-        
-        // 超过30分钟显示维护状态
-        if (Date.now() - this.startTime >= 30 * 60 * 1000) {
-          this.isMaintenance = true
-          this.noticeText = '服务器维护中，更多详情请加群了解哦~'
-          this.noticeClass = 'notice-warn'
-        } else {
-          this.noticeText = '服务正在启动中，请稍等一会~'
-          this.noticeClass = 'notice-loading'
-        }
-      }
-      
-      // 定时检查
-      const delay = this.checkCount === 0 ? 15000 : Math.min(60000 * Math.pow(2, this.checkCount - 1), 300000)
-      this.checkTimer = setTimeout(() => {
-        this.checkServiceStatus()
-      }, delay)
-    },
     // 页面跳转
     navigateTo(url) {
-      if (this.isMaintenance) {
-        uni.showToast({
-          title: '服务器维护中，请稍后再试',
-          icon: 'none'
-        })
-        return
-      }
       uni.navigateTo({
         url: url,
         fail: () => {
@@ -221,13 +139,6 @@ export default {
         title: `${feature}即将上线，敬请期待~`,
         icon: 'none',
         duration: 2000
-      })
-    },
-    // 保存二维码
-    saveQRCode() {
-      uni.showToast({
-        title: '长按图片保存二维码',
-        icon: 'none'
       })
     }
   }
@@ -306,100 +217,6 @@ export default {
   font-size: 26rpx;
   color: rgba(255, 255, 255, 0.85);
   text-align: center;
-}
-
-/* 通知提示 */
-.notice {
-  margin: 20rpx 30rpx 0;
-  padding: 20rpx 30rpx;
-  border-radius: 16rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.notice-info {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  border: 1rpx solid #90caf9;
-}
-
-.notice-warn {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  border: 1rpx solid #ffcc80;
-}
-
-.notice-loading {
-  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
-  border: 1rpx solid #ce93d8;
-}
-
-.notice-text {
-  font-size: 26rpx;
-  color: #333;
-  text-align: center;
-}
-
-/* 维护中遮罩 */
-.maintenance-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.maintenance-card {
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 60rpx 40rpx;
-  margin: 0 60rpx;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.2);
-}
-
-.maintenance-icon {
-  font-size: 80rpx;
-  margin-bottom: 30rpx;
-}
-
-.maintenance-title {
-  font-size: 36rpx;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 20rpx;
-}
-
-.maintenance-msg {
-  font-size: 28rpx;
-  color: #666;
-  text-align: center;
-  margin-bottom: 10rpx;
-}
-
-.maintenance-sub {
-  font-size: 26rpx;
-  color: #999;
-  margin-top: 30rpx;
-  margin-bottom: 20rpx;
-}
-
-.maintenance-qr {
-  width: 240rpx;
-  height: 240rpx;
-  border-radius: 12rpx;
-  margin-bottom: 16rpx;
-}
-
-.maintenance-hint {
-  font-size: 24rpx;
-  color: #999;
 }
 
 .grid {
