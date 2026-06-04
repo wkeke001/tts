@@ -1,0 +1,29 @@
+uni-button {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+uni-button::after {
+  border: none;
+}
+
+uni-view {
+  display: block;
+  box-sizing: border-box;
+}
+
+uni-text {
+  display: inline;
+  box-sizing: border-box;
+}
+
+page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background-color: #f5f5f5;
+}

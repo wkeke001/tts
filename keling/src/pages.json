@@ -1,0 +1,42 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationBarTitleText": "一二布布语音视频工坊",
+        "navigationStyle": "custom"
+      }
+    },
+    {
+      "path": "pages/tts/index",
+      "style": {
+        "navigationBarTitleText": "一二布布语音合成",
+        "navigationBarBackgroundColor": "#f8f8f8",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/video/index",
+      "style": {
+        "navigationBarTitleText": "语音表情包对话",
+        "navigationBarBackgroundColor": "#f8f8f8",
+        "navigationBarTextStyle": "black"
+      }
+    },
+    {
+      "path": "pages/sticker/index",
+      "style": {
+        "navigationBarTitleText": "表情包自动推荐",
+        "navigationBarBackgroundColor": "#f8f8f8",
+        "navigationBarTextStyle": "black"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "一二布布语音视频工坊",
+    "navigationBarBackgroundColor": "#ffffff",
+    "backgroundColor": "#f5f5f5"
+  },
+  "condition": {}
+}
