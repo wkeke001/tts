@@ -49,7 +49,7 @@
         <text class="card-desc">输入歌词和风格，由一二布布的声音来演唱歌曲</text>
       </view>
 
-      <view class="card card-primary" @click="navigateTo('/pages/scene/index')">
+      <view class="card card-primary" @click="openImagePage">
         <image class="card-icon-img" src="/static/scene.png" mode="aspectFit"></image>
         <text class="card-title">小熊场景生成</text>
         <text class="card-desc">输入文字描述，一键生成一二布布风格的场景图</text>
@@ -140,6 +140,18 @@ export default {
         icon: 'none',
         duration: 2000
       })
+    },
+    openImagePage() {
+      // #ifdef H5
+      const isDev = window.location.port === '8080'
+      const url = isDev ? 'http://localhost:8087/image' : '/image'
+      window.open(url, '_blank')
+      // #endif
+      // #ifndef H5
+      uni.navigateTo({
+        url: '/pages/scene/index'
+      })
+      // #endif
     }
   }
 }

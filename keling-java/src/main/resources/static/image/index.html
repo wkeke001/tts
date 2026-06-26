@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 生图测试</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f0f2f5; min-height: 100vh; padding: 20px; }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 { text-align: center; margin-bottom: 24px; color: #1a1a1a; font-size: 24px; }
+  .card { background: #fff; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .form-group { margin-bottom: 16px; }
+  label { display: block; font-weight: 600; margin-bottom: 6px; color: #333; font-size: 14px; }
+  input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #d9d9d9; border-radius: 8px; font-size: 14px; transition: border-color 0.2s; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,0.1); }
+  textarea { resize: vertical; min-height: 80px; }
+  .row { display: flex; gap: 16px; }
+  .row .form-group { flex: 1; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 12px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn:hover { background: #4338ca; }
+  .btn:disabled { background: #a5a5a5; cursor: not-allowed; }
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .result { text-align: center; }
+  .result img { max-width: 100%; border-radius: 8px; margin-top: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); }
+  .result a { display: inline-block; margin-top: 10px; color: #4f46e5; font-size: 14px; }
+  .error { background: #fef2f2; color: #dc2626; padding: 12px 16px; border-radius: 8px; margin-top: 12px; font-size: 14px; }
+  .meta { margin-top: 12px; font-size: 13px; color: #888; }
+  .ref-section { margin-top: 8px; }
+  .ref-list { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .ref-item { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid #e5e7eb; }
+  .ref-item img { width: 100%; height: 100%; object-fit: cover; }
+  .ref-item .remove-btn { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; background: rgba(220,38,38,0.85); color: #fff; border: none; border-radius: 50%; font-size: 12px; line-height: 20px; text-align: center; cursor: pointer; display: none; }
+  .ref-item:hover .remove-btn { display: block; }
+  .history { margin-top: 20px; }
+  .history h3 { font-size: 16px; margin-bottom: 12px; color: #333; }
+  .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+  .history-item { position: relative; cursor: pointer; border-radius: 8px; overflow: hidden; aspect-ratio: 1; }
+  .history-item img { width: 100%; height: 100%; object-fit: cover; }
+  .history-item .overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: #fff; padding: 8px; font-size: 12px; line-height: 1.3; opacity: 0; transition: opacity 0.2s; }
+  .history-item:hover .overlay { opacity: 1; }
+  .agent-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .agent-box { width: 100%; min-height: 80px; padding: 10px 12px; border: 1px solid #d9d9d9; border-radius: 8px; font-size: 14px; resize: vertical; background: #fafafa; cursor: pointer; transition: border-color 0.2s; }
+  .agent-box:hover { border-color: #4f46e5; }
+  .preset-ref { width: 80px; text-align: center; cursor: pointer; border: 2px solid transparent; border-radius: 8px; padding: 4px; transition: all 0.2s; }
+  .preset-ref img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; }
+  .preset-ref span { display: block; font-size: 12px; color: #666; margin-top: 4px; }
+  .preset-ref.active { border-color: #4f46e5; background: rgba(79,70,229,0.06); }
+  .preset-ref:hover { border-color: #a5b4fc; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>AI 生图测试</h1>
+
+  <div class="card">
+    <div class="row">
+      <div class="form-group">
+        <label>API Key</label>
+        <input type="password" id="apiKey" placeholder="sk-xxxxx" />
+      </div>
+      <div class="form-group">
+        <label>模型</label>
+        <select id="model">
+          <option value="gpt-image-2">gpt-image-2 ($0.04/次)</option>
+          <option value="gpt-image-2-vip">gpt-image-2-vip ($0.13/次)</option>
+          <option value="nano-banana">nano-banana ($0.14/次)</option>
+          <option value="nano-banana-2">nano-banana-2 ($0.12/次)</option>
+          <option value="nano-banana-pro">nano-banana-pro ($0.18/次)</option>
+        </select>
+      </div>
+    </div>
+
+    <div style="margin-bottom:12px;">
+      <button type="button" class="btn" id="randomBtn" style="width:auto;padding:8px 16px;font-size:13px;background:#f59e0b;" onclick="callAgentRandom()">随机搞笑剧</button>
+    </div>
+
+    <div class="form-group">
+      <label>提示词</label>
+      <div style="display:flex;gap:8px;align-items:flex-start;">
+        <textarea id="prompt" placeholder="描述你想生成的图片..." style="flex:1;"></textarea>
+        <button type="button" class="btn" id="agentBtn" style="width:auto;padding:10px 16px;font-size:13px;white-space:nowrap;margin-top:0;height:fit-content;" onclick="callAgent()">智能优化</button>
+      </div>
+    </div>
+
+    <div class="form-group" id="agentResultSection" style="display:none;">
+      <label>智能体结果</label>
+      <div class="agent-grid">
+        <textarea class="agent-box" id="agentBox1" placeholder="结果 1" oninput="agentValues[0]=this.value"></textarea>
+        <textarea class="agent-box" id="agentBox2" placeholder="结果 2" oninput="agentValues[1]=this.value"></textarea>
+        <textarea class="agent-box" id="agentBox3" placeholder="结果 3" oninput="agentValues[2]=this.value"></textarea>
+        <textarea class="agent-box" id="agentBox4" placeholder="结果 4" oninput="agentValues[3]=this.value"></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="form-group">
+        <label>尺寸</label>
+        <select id="size">
+          <option value="1024x1024">1024 x 1024</option>
+          <option value="1536x1024">1536 x 1024 (横)</option>
+          <option value="1024x1536">1024 x 1536 (竖)</option>
+          <option value="auto">auto</option>
+        </select>
+      </div>
+      <div class="form-group ref-section">
+        <label>参考图 (可选，可添加多张)</label>
+        <div class="preset-refs" style="display:flex;gap:8px;margin-bottom:8px;">
+          <div class="preset-ref active" id="presetBaiBear" onclick="togglePresetRef('baibear')" title="白熊">
+            <img src="http://175.178.44.121:8082/wangke/1/一二布布原型图/12.jpg" alt="白熊" />
+            <span>白熊</span>
+          </div>
+          <div class="preset-ref active" id="presetZongBear" onclick="togglePresetRef('zongbear')" title="棕熊">
+            <img src="http://175.178.44.121:8082/wangke/1/一二布布原型图/nono.jpeg" alt="棕熊" />
+            <span>棕熊</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="refUrl" placeholder="输入图片 URL 后点添加" style="flex:1;" />
+          <button type="button" class="btn" style="width:auto;padding:10px 16px;font-size:13px;" onclick="addRefUrl()">添加</button>
+        </div>
+        <input type="file" id="refFile" accept="image/*" multiple style="margin-top:6px;font-size:13px;" />
+        <div id="refList" class="ref-list"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label style="display:flex;align-items:center;justify-content:space-between;">
+        总体描述
+        <button type="button" class="btn" id="overallEditBtn" style="width:auto;padding:4px 12px;font-size:12px;margin:0;" onclick="toggleOverallEdit()">修改</button>
+      </label>
+      <textarea id="overallPrompt" readonly style="min-height:180px;background:#fafafa;">请根据参考图中的两个主人公创作一张四格漫画。
+
+角色设定：
+1. 白熊：小巧可爱，白色身体，圆脸，黑色小耳朵。
+2. 棕熊：棕色身体，圆脸，小耳朵，性格活泼。
+请保持两个角色在四格中外观一致，不要改变颜色、体型和主要特征。
+
+画面要求：
+- 生成一张完整的四格漫画，2×2排版，每格边框清晰。
+- 每一格都要出现白熊和棕熊两个主人公。
+- 背景根据场景适度替换。
+- 四格漫画衔接流畅
+
+四格剧情：</textarea>
+    </div>
+
+    <button class="btn" id="generateBtn" onclick="generate()">生成图片</button>
+  </div>
+
+  <div class="card result" id="resultCard" style="display:none;">
+    <h3 id="resultTitle"></h3>
+    <div id="resultBody"></div>
+  </div>
+
+  <div class="card history" id="historyCard" style="display:none;">
+    <h3>历史记录</h3>
+    <div class="history-grid" id="historyGrid"></div>
+  </div>
+</div>
+
+<script>
+const BASE = 'https://www.right.codes/draw';
+const AGENT_URL = 'http://175.178.44.121/v1/chat-messages';
+const AGENT_TOKEN = 'Bearer app-5luDF8C3bz5IPy8QJ3YH6Cv2';
+let refImages = [];
+let history = JSON.parse(localStorage.getItem('img_history') || '[]');
+
+document.getElementById('apiKey').value = localStorage.getItem('img_apikey') || '';
+document.getElementById('apiKey').addEventListener('change', e => localStorage.setItem('img_apikey', e.target.value));
+
+const savedOverall = localStorage.getItem('img_overall_prompt');
+if (savedOverall !== null) document.getElementById('overallPrompt').value = savedOverall;
+
+let agentValues = ['', '', '', ''];
+
+const presetRefs = {
+  baibear: { url: 'http://175.178.44.121:8082/wangke/1/一二布布原型图/12.jpg', el: 'presetBaiBear', active: true },
+  zongbear: { url: 'http://175.178.44.121:8082/wangke/1/一二布布原型图/nono.jpeg', el: 'presetZongBear', active: true }
+};
+refImages.push({ value: presetRefs.baibear.url, thumb: presetRefs.baibear.url, preset: 'baibear' });
+refImages.push({ value: presetRefs.zongbear.url, thumb: presetRefs.zongbear.url, preset: 'zongbear' });
+
+function toggleOverallEdit() {
+  const ta = document.getElementById('overallPrompt');
+  const btn = document.getElementById('overallEditBtn');
+  if (ta.readOnly) {
+    ta.readOnly = false;
+    ta.style.background = '#fff';
+    btn.textContent = '保存';
+  } else {
+    ta.readOnly = true;
+    ta.style.background = '#fafafa';
+    btn.textContent = '修改';
+    localStorage.setItem('img_overall_prompt', ta.value);
+  }
+}
+
+function togglePresetRef(key) {
+  const preset = presetRefs[key];
+  preset.active = !preset.active;
+  document.getElementById(preset.el).classList.toggle('active', preset.active);
+  if (preset.active) {
+    refImages.push({ value: preset.url, thumb: preset.url, preset: key });
+  } else {
+    refImages = refImages.filter(r => r.preset !== key);
+  }
+  renderRefList();
+}
+
+async function callAgentRandom() {
+  const btn = document.getElementById('randomBtn');
+  btn.disabled = true;
+  btn.textContent = '随机生成中...';
+
+  try {
+    const res = await fetch(AGENT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': AGENT_TOKEN },
+      body: JSON.stringify({ inputs: { random: true }, query: '随机搞笑剧', response_mode: 'blocking', conversation_id: '', user: 'abc-123' })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = await res.json();
+    const answer = data.answer || '';
+
+    const parts = answer.split(/[;；]/).map(s => s.trim());
+    agentValues[0] = parts[0] || '';
+    agentValues[1] = parts[1] || '';
+    agentValues[2] = parts[2] || '';
+    agentValues[3] = parts[3] || '';
+    document.getElementById('agentBox1').value = agentValues[0];
+    document.getElementById('agentBox2').value = agentValues[1];
+    document.getElementById('agentBox3').value = agentValues[2];
+    document.getElementById('agentBox4').value = agentValues[3];
+    document.getElementById('agentResultSection').style.display = '';
+
+  } catch (err) {
+    alert('随机搞笑剧请求失败: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '随机搞笑剧';
+  }
+}
+
+async function callAgent() {
+  const prompt = document.getElementById('prompt').value.trim();
+  if (!prompt) return alert('请先输入提示词');
+
+  const btn = document.getElementById('agentBtn');
+  btn.disabled = true;
+  btn.textContent = '请求中...';
+
+  try {
+    const res = await fetch(AGENT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': AGENT_TOKEN },
+      body: JSON.stringify({ inputs: {}, query: prompt, response_mode: 'blocking', conversation_id: '', user: 'abc-123' })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = await res.json();
+    const answer = data.answer || '';
+
+    const parts = answer.split(/[;；]/).map(s => s.trim());
+    agentValues[0] = parts[0] || '';
+    agentValues[1] = parts[1] || '';
+    agentValues[2] = parts[2] || '';
+    agentValues[3] = parts[3] || '';
+    document.getElementById('agentBox1').value = agentValues[0];
+    document.getElementById('agentBox2').value = agentValues[1];
+    document.getElementById('agentBox3').value = agentValues[2];
+    document.getElementById('agentBox4').value = agentValues[3];
+    document.getElementById('agentResultSection').style.display = '';
+
+  } catch (err) {
+    alert('智能体请求失败: ' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '智能优化';
+  }
+}
+
+
+function renderRefList() {
+  const container = document.getElementById('refList');
+  container.innerHTML = refImages.map((item, i) =>
+    `<div class="ref-item">
+      <img src="${item.thumb}" />
+      <button class="remove-btn" onclick="removeRef(${i})">×</button>
+    </div>`
+  ).join('');
+}
+
+function addRefUrl() {
+  const input = document.getElementById('refUrl');
+  const url = input.value.trim();
+  if (!url) return;
+  refImages.push({ value: url, thumb: url });
+  input.value = '';
+  renderRefList();
+}
+
+function removeRef(index) {
+  refImages.splice(index, 1);
+  renderRefList();
+}
+
+document.getElementById('refFile').addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      refImages.push({ value: ev.target.result, thumb: ev.target.result });
+      renderRefList();
+    };
+    reader.readAsDataURL(file);
+  });
+  e.target.value = '';
+});
+
+function renderHistory() {
+  if (!history.length) { document.getElementById('historyCard').style.display = 'none'; return; }
+  document.getElementById('historyCard').style.display = '';
+  document.getElementById('historyGrid').innerHTML = history.map(h =>
+    `<div class="history-item" onclick="window.open('${h.url}')">
+      <img src="${h.url}" loading="lazy" />
+      <div class="overlay">${h.prompt.slice(0, 60)}</div>
+    </div>`
+  ).join('');
+}
+renderHistory();
+
+async function generate() {
+  const apiKey = document.getElementById('apiKey').value.trim();
+  const model = document.getElementById('model').value;
+  const size = document.getElementById('size').value;
+  const overallText = document.getElementById('overallPrompt').value.trim();
+  const rawPrompt = document.getElementById('prompt').value.trim();
+  const agentText = agentValues.filter(v => v.trim()).join('；');
+
+  if (!apiKey) return alert('请输入 API Key');
+
+  let finalPrompt = '';
+  if (agentText) {
+    finalPrompt = overallText ? overallText + '\n' + agentText : agentText;
+  } else if (rawPrompt) {
+    finalPrompt = overallText ? overallText + '\n' + rawPrompt : rawPrompt;
+  } else {
+    return alert('请输入提示词');
+  }
+
+  const btn = document.getElementById('generateBtn');
+  const card = document.getElementById('resultCard');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> 生成中...';
+  card.style.display = '';
+  document.getElementById('resultTitle').textContent = '生成中，请稍候...';
+  document.getElementById('resultBody').innerHTML = '';
+
+  const images = refImages.map(r => {
+    if (r.value.startsWith('data:')) {
+      return r.value.split(',')[1];
+    }
+    return r.value;
+  });
+  const body = { model, prompt: finalPrompt, image: images, size, response_format: 'url' };
+
+  console.log('请求 URL:', `${BASE}/v1/images/generations`);
+  console.log('请求体:', JSON.stringify(body, null, 2));
+  console.log('Authorization:', `Bearer ${apiKey.slice(0, 8)}...`);
+  console.log('拼接后提示词:', finalPrompt);
+
+  const start = Date.now();
+
+  try {
+    const res = await fetch(`${BASE}/v1/images/generations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(`HTTP ${res.status}: ${text}`);
+    }
+
+    const data = await res.json();
+    const elapsed = ((Date.now() - start) / 1000).toFixed(1);
+    const url = data.data[0].url;
+    const usage = data.usage || {};
+
+    document.getElementById('resultTitle').textContent = '生成完成';
+    document.getElementById('resultBody').innerHTML =
+      `<img src="${url}" alt="generated" />
+       <br><a href="${url}" target="_blank">在新标签页打开原图</a>
+       <div class="meta">耗时 ${elapsed}s | tokens: ${usage.total_tokens || '-'} (输入 ${usage.input_tokens || '-'} / 输出 ${usage.output_tokens || '-'})</div>`;
+
+    history.unshift({ url, prompt: finalPrompt, time: Date.now() });
+    if (history.length > 20) history.pop();
+    localStorage.setItem('img_history', JSON.stringify(history));
+    renderHistory();
+
+  } catch (err) {
+    document.getElementById('resultTitle').textContent = '生成失败';
+    document.getElementById('resultBody').innerHTML = `<div class="error">${err.message}</div>`;
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '生成图片';
+  }
+}
+</script>
+</body>
+</html>
