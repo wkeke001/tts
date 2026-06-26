@@ -19,6 +19,10 @@ oss:
 dashscope:
   api-key: ${DASHSCOPE_API_KEY}
 
+dify:
+  api-url: ${DIFY_API_URL}
+  api-token: ${DIFY_API_TOKEN}
+
 logging:
   level:
     root: info

@@ -13,7 +13,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addRedirectViewController("/voice", "/pages/tts/index");
         registry.addRedirectViewController("/chat", "/pages/video/index");
         registry.addRedirectViewController("/sticker", "/pages/sticker/index");
-        registry.addRedirectViewController("/image", "/pages/image/index.html");
     }
 
     @Override

@@ -143,9 +143,7 @@ export default {
     },
     openImagePage() {
       // #ifdef H5
-      const isDev = window.location.port === '8080'
-      const url = isDev ? 'http://localhost:8087/image' : '/image'
-      window.open(url, '_blank')
+      window.open('./static/scene.html', '_blank')
       // #endif
       // #ifndef H5
       uni.navigateTo({

@@ -162,8 +162,7 @@
 
 <script>
 const BASE = 'https://www.right.codes/draw';
-const AGENT_URL = 'http://175.178.44.121/v1/chat-messages';
-const AGENT_TOKEN = 'Bearer app-5luDF8C3bz5IPy8QJ3YH6Cv2';
+const AGENT_URL = '/api/scene/agent';
 let refImages = [];
 let history = JSON.parse(localStorage.getItem('img_history') || '[]');
 
@@ -217,7 +216,7 @@ async function callAgentRandom() {
   try {
     const res = await fetch(AGENT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': AGENT_TOKEN },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ inputs: { random: true }, query: '随机搞笑剧', response_mode: 'blocking', conversation_id: '', user: 'abc-123' })
     });
 
@@ -259,7 +258,7 @@ async function callAgent() {
   try {
     const res = await fetch(AGENT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': AGENT_TOKEN },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ inputs: {}, query: prompt, response_mode: 'blocking', conversation_id: '', user: 'abc-123' })
     });
 
